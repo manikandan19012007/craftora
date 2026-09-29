@@ -1,0 +1,240 @@
+.craftora-artisans-page {
+  padding-bottom: 5rem;
+}
+
+.artisans-hero-banner {
+  background: linear-gradient(135deg, #2D241E 0%, #4A3B32 100%);
+  color: var(--color-surface);
+  padding: 4rem 0 3.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.artisans-hero-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at top center, rgba(193, 122, 63, 0.25), transparent 70%);
+  pointer-events: none;
+}
+
+.artisans-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.artisans-hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.12);
+  color: #F8C291;
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.artisans-hero-title {
+  font-size: 2.5rem;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-surface);
+}
+
+.artisans-hero-subtitle {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 2rem;
+}
+
+.artisans-search-form {
+  display: flex;
+  align-items: center;
+  background: var(--color-surface);
+  border-radius: var(--radius-full);
+  padding: 0.35rem 0.5rem 0.35rem 1.25rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.artisans-search-form .search-icon {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  margin-right: 0.5rem;
+}
+
+.artisans-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  outline: none;
+  padding: 0.5rem 0;
+}
+
+.artisans-search-input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.artisans-search-btn {
+  background: var(--color-primary);
+  color: var(--color-surface);
+  border: none;
+  padding: 0.65rem 1.5rem;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.artisans-search-btn:hover {
+  background: var(--color-primary-dark);
+}
+
+/* Main Container & Filters */
+.artisans-main-container {
+  margin-top: 2.5rem;
+}
+
+.craft-filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 2rem;
+}
+
+.craft-filter-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.craft-chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.craft-chip {
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-light);
+  padding: 0.4rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.craft-chip:hover {
+  background: rgba(193, 122, 63, 0.1);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.craft-chip.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.artisans-meta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.75rem;
+}
+
+.artisans-count {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--color-text-light);
+}
+
+.artisans-count strong {
+  color: var(--color-text);
+}
+
+.reset-filter-link {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Grid */
+.artisans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+/* Empty State */
+.artisans-empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--color-border);
+}
+
+.empty-icon-wrap {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--color-bg-alt);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+}
+
+.artisans-empty-state h3 {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+
+.artisans-empty-state p {
+  color: var(--color-text-light);
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .artisans-hero-title {
+    font-size: 2rem;
+  }
+  .artisans-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,314 @@
+/* ===================================================
+ * CRAFTORA FOOTER STYLES
+ * =================================================== */
+
+.craftora-footer {
+  background-color: var(--primary);
+  color: #EEE4DC;
+  margin-top: auto;
+}
+
+/* ─── TRUST STRIP ────────────────────────────── */
+.footer-trust-strip {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1.25rem 0;
+}
+
+.trust-strip-inner {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.trust-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.trust-icon-wrap {
+  color: var(--secondary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.trust-item strong {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 0.15rem;
+  font-family: var(--font-body);
+}
+
+.trust-item span {
+  font-size: 0.78rem;
+  color: rgba(238, 228, 220, 0.7);
+  line-height: 1.4;
+}
+
+/* ─── MAIN CONTENT ───────────────────────────── */
+.footer-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  padding: 3rem 0 2.5rem;
+}
+
+/* Brand Column */
+.footer-brand-col {}
+
+.footer-brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.footer-brand-icon {
+  font-size: 1.8rem;
+}
+
+.footer-brand-name {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  color: #FFFFFF;
+  line-height: 1.1;
+}
+
+.footer-brand-tagline {
+  display: block;
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--secondary);
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.footer-brand-desc {
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: rgba(238, 228, 220, 0.72);
+  margin-bottom: 1.25rem;
+  max-width: 280px;
+}
+
+/* Social Links */
+.footer-socials {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(238, 228, 220, 0.8);
+  transition: var(--transition-fast);
+}
+
+.social-link:hover {
+  background: var(--secondary);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Footer Link Columns */
+.footer-links-col {}
+
+.footer-links-col h4 {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #FFFFFF;
+  margin-bottom: 1rem;
+}
+
+.footer-links-col ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.footer-links-col ul li a {
+  font-size: 0.875rem;
+  color: rgba(238, 228, 220, 0.65);
+  transition: var(--transition-fast);
+  text-decoration: none;
+}
+
+.footer-links-col ul li a:hover {
+  color: var(--secondary);
+  padding-left: 3px;
+}
+
+/* ─── NEWSLETTER STRIP ───────────────────────── */
+.footer-newsletter-strip {
+  background: rgba(255,255,255,0.05);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 1.5rem 0;
+}
+
+.newsletter-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.newsletter-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.newsletter-text strong {
+  font-size: 0.975rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  font-family: var(--font-body);
+}
+
+.newsletter-text span {
+  font-size: 0.82rem;
+  color: rgba(238, 228, 220, 0.65);
+}
+
+.newsletter-form {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.newsletter-form input {
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1);
+  color: white;
+  font-size: 0.875rem;
+  width: 240px;
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.newsletter-form input::placeholder {
+  color: rgba(255,255,255,0.4);
+}
+
+.newsletter-form input:focus {
+  border-color: var(--secondary);
+  background: rgba(255,255,255,0.15);
+}
+
+.newsletter-form button {
+  background-color: var(--secondary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 0.55rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  white-space: nowrap;
+}
+
+.newsletter-form button:hover {
+  background-color: var(--secondary-hover);
+}
+
+/* ─── BOTTOM BAR ─────────────────────────────── */
+.footer-bottom {
+  padding: 1.25rem 0;
+}
+
+.footer-bottom-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.footer-bottom p {
+  font-size: 0.8rem;
+  color: rgba(238, 228, 220, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.heart-icon {
+  display: inline;
+  vertical-align: middle;
+}
+
+.footer-legal-links {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.78rem;
+  color: rgba(238, 228, 220, 0.45);
+}
+
+/* ─── RESPONSIVE ─────────────────────────────── */
+@media (max-width: 1024px) {
+  .trust-strip-inner {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .footer-content {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer-content {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    padding: 2rem 0 1.5rem;
+  }
+  .newsletter-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .newsletter-form {
+    width: 100%;
+  }
+  .newsletter-form input {
+    width: 100%;
+    min-width: 0;
+    flex: 1;
+  }
+  .footer-bottom-inner {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .trust-strip-inner {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  .footer-content {
+    grid-template-columns: 1fr;
+  }
+  .footer-legal-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

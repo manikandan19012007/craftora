@@ -1,0 +1,291 @@
+.craftora-artisan-profile-page {
+  padding-bottom: 5rem;
+}
+
+.profile-top-bar {
+  background: var(--color-bg-alt);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0.85rem 0;
+}
+
+.profile-top-bar .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.profile-top-bar .back-link:hover {
+  color: var(--color-primary);
+}
+
+/* Hero Section */
+.artisan-hero-section {
+  position: relative;
+  background: var(--color-bg);
+  padding-bottom: 3.5rem;
+}
+
+.artisan-cover-art {
+  height: 200px;
+  background: linear-gradient(135deg, #3C2E26 0%, #6E4C38 50%, #C17A3F 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.artisan-cover-art::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.artisan-profile-card {
+  position: relative;
+  margin-top: -80px;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  padding: 2.5rem;
+  display: flex;
+  gap: 2.5rem;
+  z-index: 2;
+}
+
+.artisan-avatar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.artisan-main-avatar {
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid var(--color-surface);
+  box-shadow: var(--shadow-md);
+  background: var(--color-bg-alt);
+}
+
+.craft-badge {
+  margin-top: -15px;
+  background: var(--color-primary);
+  color: var(--color-surface);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.35rem 1rem;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.artisan-info-col {
+  flex: 1;
+}
+
+.artisan-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.artisan-fullname {
+  font-size: 2.25rem;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.share-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-light);
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.share-profile-btn:hover {
+  background: var(--color-primary);
+  color: var(--color-surface);
+  border-color: var(--color-primary);
+}
+
+.artisan-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.pill-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+  background: var(--color-bg-alt);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+}
+
+.pill-item.rating-pill {
+  gap: 0.5rem;
+  color: var(--color-text);
+}
+
+.artisan-biography {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--color-text);
+  margin-bottom: 2rem;
+  white-space: pre-line;
+}
+
+.artisan-highlights-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 1.5rem;
+}
+
+.highlight-box {
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  text-align: center;
+}
+
+.highlight-box .h-val {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: var(--font-serif);
+  color: var(--color-primary);
+  margin-bottom: 0.2rem;
+}
+
+.highlight-box .h-lbl {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+/* Products Section */
+.artisan-products-section {
+  padding-top: 2rem;
+}
+
+.catalog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.catalog-header .section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-primary);
+  margin-bottom: 0.35rem;
+}
+
+.catalog-header .catalog-title {
+  font-size: 1.85rem;
+  font-family: var(--font-serif);
+  color: var(--color-text);
+  margin-bottom: 0.35rem;
+}
+
+.catalog-header .catalog-desc {
+  font-size: 0.95rem;
+  color: var(--color-text-light);
+  max-width: 600px;
+}
+
+.catalog-count-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-bg-alt);
+  color: var(--color-text-light);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid var(--color-border);
+}
+
+.artisan-no-products {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--color-border);
+}
+
+.artisan-no-products svg {
+  color: var(--color-text-muted);
+  margin-bottom: 1rem;
+}
+
+.artisan-no-products h3 {
+  font-size: 1.35rem;
+  font-family: var(--font-serif);
+  margin-bottom: 0.5rem;
+}
+
+.artisan-no-products p {
+  color: var(--color-text-light);
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 850px) {
+  .artisan-profile-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem 1.5rem;
+    margin-top: -60px;
+  }
+  .artisan-title-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .artisan-pills-row {
+    justify-content: center;
+  }
+  .catalog-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+  .artisan-highlights-grid {
+    grid-template-columns: 1fr;
+  }
+}

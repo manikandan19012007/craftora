@@ -1,0 +1,357 @@
+/* ===================================================
+ * CRAFTORA PRODUCT CARD STYLES
+ * =================================================== */
+
+.craftora-product-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.craftora-product-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+  border-color: rgba(184, 111, 82, 0.2);
+}
+
+.craftora-product-card.out-of-stock {
+  opacity: 0.7;
+}
+
+/* ─── IMAGE SECTION ───────────────────────────── */
+.product-image-wrap {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  background-color: var(--bg-muted);
+}
+
+.product-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.craftora-product-card:hover .product-card-img {
+  transform: scale(1.05);
+}
+
+/* Wishlist Heart */
+.wishlist-icon-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: var(--transition-fast);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  color: var(--text-muted);
+}
+
+.wishlist-icon-btn:hover {
+  background: white;
+  color: var(--secondary);
+  transform: scale(1.1);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+.wishlist-icon-btn.active {
+  background: var(--secondary-light);
+  color: var(--secondary);
+}
+
+.wishlist-icon-btn:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
+/* Top Badges */
+.card-top-badges {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  z-index: 2;
+}
+
+.badge-discount {
+  display: inline-flex;
+  align-items: center;
+  background: #E53935;
+  color: white;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.02em;
+}
+
+.badge-customizable {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  background: linear-gradient(135deg, #FFF6E5 0%, #FFE9CA 100%);
+  color: #925807;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-full);
+  border: 1px solid #F3DBB3;
+}
+
+/* Stock Badge */
+.badge-stock {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+  z-index: 2;
+}
+
+.badge-stock.out {
+  background: #B71C1C;
+  color: white;
+}
+
+.badge-stock.low {
+  background: #FF6F00;
+  color: white;
+}
+
+/* Hover Quick View */
+.card-hover-actions {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  padding: 0.65rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 100%);
+  transform: translateY(100%);
+  transition: var(--transition);
+  z-index: 2;
+}
+
+.craftora-product-card:hover .card-hover-actions {
+  transform: translateY(0);
+}
+
+.hover-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: white;
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius-full);
+  transition: var(--transition-fast);
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.hover-action-btn:hover {
+  background: var(--secondary);
+  color: white;
+}
+
+/* ─── PRODUCT INFO ─────────────────────────────── */
+.product-info-wrap {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.card-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-category {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card-gender {
+  font-size: 0.68rem;
+  color: var(--text-light);
+  background: var(--bg-muted);
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radius-full);
+  font-weight: 500;
+}
+
+.card-artisan {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+.card-product-title {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0.1rem 0;
+}
+
+.card-product-title a {
+  color: inherit;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.card-product-title a:hover {
+  color: var(--secondary);
+}
+
+.card-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.rating-num-label {
+  font-size: 0.75rem;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+/* Price Row */
+.card-price-row {
+  margin-top: 0.2rem;
+}
+
+.card-price-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.price-amount {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--primary);
+  font-family: var(--font-body);
+}
+
+.price-original {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  text-decoration: line-through;
+  font-weight: 400;
+}
+
+/* ─── DUAL ACTION BUTTONS ──────────────────────── */
+.card-action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.card-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.5rem;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  border: none;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.card-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Add to Cart - Outlined */
+.card-btn-cart {
+  background: transparent;
+  border: 1.5px solid var(--border-color);
+  color: var(--primary);
+}
+
+.card-btn-cart:hover:not(:disabled) {
+  border-color: var(--secondary);
+  color: var(--secondary);
+  background-color: var(--secondary-light);
+}
+
+.card-btn-cart:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* Buy Now - Filled */
+.card-btn-buynow {
+  background-color: var(--secondary);
+  color: white;
+  box-shadow: 0 2px 8px rgba(184, 111, 82, 0.25);
+}
+
+.card-btn-buynow:hover:not(:disabled) {
+  background-color: var(--secondary-hover);
+  box-shadow: 0 3px 12px rgba(184, 111, 82, 0.35);
+  transform: translateY(-1px);
+}
+
+.card-btn-buynow:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.card-btn:focus-visible {
+  outline: 2px solid var(--secondary);
+  outline-offset: 2px;
+}
+
+/* ─── RESPONSIVE ───────────────────────────────── */
+@media (max-width: 480px) {
+  .card-action-buttons {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .card-btn {
+    padding: 0.6rem;
+  }
+}
