@@ -67,22 +67,15 @@
   border: 1.5px solid var(--border-color);
   border-radius: var(--radius-md);
   background: var(--bg-main);
-  cursor: pointer;
   transition: var(--transition-fast);
   text-align: left;
   position: relative;
   width: 100%;
 }
 
-.role-card:hover {
-  border-color: var(--secondary);
-  background: var(--secondary-light);
-}
-
-.role-card.active {
-  border-color: var(--secondary);
-  background: var(--secondary-light);
-  box-shadow: 0 0 0 3px rgba(184, 111, 82, 0.12);
+/* Informational-only role card (non-clickable) */
+.role-info-card {
+  cursor: default;
 }
 
 .role-card-icon {
@@ -129,44 +122,60 @@
   line-height: 1.35;
 }
 
-.role-active-dot {
+/* Password toggle button inside input-field-wrap */
+.password-toggle-btn {
   position: absolute;
-  top: 50%;
-  right: 1rem;
-  transform: translateY(-50%);
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--secondary);
-  animation: fadeIn 0.2s ease;
-}
-
-/* Demo Credentials Banner */
-.demo-credentials-banner {
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  background: var(--primary-light);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 0.55rem 0.9rem;
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  font-family: 'Courier New', monospace;
-  margin-bottom: 1.25rem;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+.password-toggle-btn:hover {
+  color: var(--secondary);
 }
 
-.demo-badge {
-  background: var(--primary);
-  color: white;
-  font-size: 0.65rem;
-  font-weight: 700;
-  padding: 0.15rem 0.5rem;
-  border-radius: var(--radius-full);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-family: var(--font-body);
-  flex-shrink: 0;
+/* Password strength rules list */
+.password-rules-list {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.password-rules-list li {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.76rem;
+}
+.password-rules-list .rule-pass {
+  color: #16a34a;
+}
+.password-rules-list .rule-fail {
+  color: var(--text-muted);
+}
+
+/* Confirm password match hint */
+.confirm-match-hint {
+  font-size: 0.76rem;
+  margin-top: 3px;
+}
+.confirm-match-hint.match-ok   { color: #16a34a; }
+.confirm-match-hint.match-fail { color: #dc2626; }
+
+/* Optional label */
+.optional-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  margin-left: 4px;
 }
 
 
@@ -302,63 +311,6 @@
   font-size: 1rem;
 }
 
-/* DEMO QUICK-LOGIN CREDENTIALS */
-.demo-credentials-box {
-  margin-top: 1.75rem;
-  padding-top: 1.5rem;
-  border-top: 1px dashed var(--border-color);
-}
-
-.demo-credentials-box h4 {
-  font-size: 0.82rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  margin-bottom: 0.75rem;
-}
-
-.demo-buttons-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-
-.demo-btn {
-  background: var(--bg-muted);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 8px 6px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-.demo-btn:hover {
-  background: #ffffff;
-  border-color: var(--secondary);
-}
-
-.demo-btn.highlight {
-  border-color: var(--secondary);
-  background: var(--secondary-light);
-}
-
-.demo-btn strong {
-  font-size: 0.75rem;
-  color: var(--primary);
-}
-
-.demo-btn span {
-  font-size: 0.65rem;
-  color: var(--text-light);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .auth-footer {
   text-align: center;
   margin-top: 1.5rem;
@@ -381,8 +333,5 @@
 @media (max-width: 540px) {
   .auth-card {
     padding: 1.75rem 1.25rem;
-  }
-  .demo-buttons-grid {
-    grid-template-columns: 1fr;
   }
 }

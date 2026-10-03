@@ -3,10 +3,10 @@
 }
 
 .admin-header-banner {
-  background: linear-gradient(135deg, #1A1412 0%, #2D241E 100%);
-  color: var(--color-surface);
+  background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%);
+  color: #FFFFFF;
   padding: 3rem 0 2.5rem;
-  border-bottom: 3px solid var(--color-primary);
+  border-bottom: 3px solid var(--secondary);
 }
 
 .admin-header-inner {
@@ -19,24 +19,29 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: rgba(229, 80, 57, 0.2);
-  color: #FF7675;
+  background: rgba(37, 99, 235, 0.2);
+  color: #93C5FD;
   padding: 0.3rem 0.75rem;
   border-radius: var(--radius-full);
   font-size: 0.8rem;
   font-weight: 700;
   margin-bottom: 0.6rem;
-  border: 1px solid rgba(255, 118, 117, 0.3);
+  border: 1px solid rgba(147, 197, 253, 0.3);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .admin-title {
   font-size: 2.2rem;
-  font-family: var(--font-serif);
-  font-weight: 700;
-  color: var(--color-surface);
+  font-family: var(--font-heading);
+  font-weight: 800;
+  color: #FFFFFF !important;
   margin-bottom: 0.35rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.admin-subtitle {
+  color: #E2E8F0 !important;
 }
 
 .admin-subtitle {

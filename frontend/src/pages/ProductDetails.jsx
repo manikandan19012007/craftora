@@ -123,22 +123,7 @@ export default function ProductDetails() {
           const revRes = await getProductReviews(id);
           setReviews(revRes.reviews || []);
         } catch {
-          setReviews([
-            {
-              id: 101,
-              user_name: 'Priya Nambiar',
-              rating: 5,
-              comment: 'The craftsmanship is truly exceptional. You can feel the time, heart, and soul poured into this handmade piece. Highly recommend!',
-              created_at: '2026-02-14'
-            },
-            {
-              id: 102,
-              user_name: 'Rohan Verma',
-              rating: 5,
-              comment: 'Delivered in sustainable protective packaging with an authentic artisan authenticity card. Five stars!',
-              created_at: '2026-02-18'
-            }
-          ]);
+          setReviews([]);
         }
       } else {
         setError("Product not found.");
@@ -363,7 +348,7 @@ export default function ProductDetails() {
               onClick={() => toggleWishlist(product)}
               title={isFavorited ? "Remove from wishlist" : "Add to wishlist"}
             >
-              <Heart size={20} fill={isFavorited ? "#B86F52" : "none"} color={isFavorited ? "#B86F52" : "currentColor"} />
+              <Heart size={20} fill={isFavorited ? "#EF4444" : "none"} color={isFavorited ? "#EF4444" : "currentColor"} />
             </button>
           </div>
 
@@ -374,8 +359,8 @@ export default function ProductDetails() {
                 <Sparkles size={16} className="sparkle-icon" />
                 <h4>Selected Customization & Variant Preview</h4>
               </div>
-              <div className="preview-stage" style={{ backgroundColor: selectedColor?.hex ? `${selectedColor.hex}18` : '#F9F5F0' }}>
-                <div className="preview-tag-wrap" style={{ borderColor: selectedColor?.hex || '#B86F52' }}>
+              <div className="preview-stage" style={{ backgroundColor: selectedColor?.hex ? `${selectedColor.hex}18` : '#EFF6FF' }}>
+                <div className="preview-tag-wrap" style={{ borderColor: selectedColor?.hex || 'var(--secondary)' }}>
                   {selectedColor && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center', marginBottom: '6px' }}>
                       <span className="color-dot" style={{ backgroundColor: selectedColor.hex, width: '12px', height: '12px' }} />
@@ -386,7 +371,7 @@ export default function ProductDetails() {
                     <span className="preview-label" style={{ display: 'block', fontSize: '0.8rem', color: '#666' }}>Size: {selectedSize.label}</span>
                   )}
                   {customText && (
-                    <div className="preview-text-render" style={{ color: selectedColor?.hex || '#4A2C24', marginTop: '6px', fontSize: '1.1rem', fontWeight: 600 }}>
+                    <div className="preview-text-render" style={{ color: selectedColor?.hex || 'var(--primary)', marginTop: '6px', fontSize: '1.1rem', fontWeight: 600 }}>
                       "{customText}"
                     </div>
                   )}
@@ -449,7 +434,7 @@ export default function ProductDetails() {
             <div className="rating-pill">
               <RatingStars rating={product.rating || 4.9} size={16} />
               <span className="rating-text">
-                {Number(product.rating || 4.9).toFixed(1)} ({reviews.length} artisan reviews)
+                {reviews.length > 0 ? `${Number(product.rating || 4.9).toFixed(1)} (${reviews.length} verified reviews)` : 'Verified Artisan Quality'}
               </span>
             </div>
           </div>
@@ -767,16 +752,23 @@ export default function ProductDetails() {
 
               {/* Reviews List */}
               <div className="reviews-list-col">
-                {reviews.map((rev) => (
-                  <div key={rev.id} className="review-item-card">
-                    <div className="review-top">
-                      <strong>{rev.user_name || 'Artisan Collector'}</strong>
-                      <RatingStars rating={rev.rating} size={13} />
-                    </div>
-                    <p className="review-body">{rev.comment}</p>
-                    <span className="review-date">{rev.created_at ? new Date(rev.created_at).toLocaleDateString() : 'Recent'}</span>
+                {reviews.length === 0 ? (
+                  <div className="no-reviews-box" style={{ padding: '24px', textAlign: 'center', background: '#FAF8F5', borderRadius: '8px', border: '1px dashed #E8E1D5', color: '#6E6359' }}>
+                    <p style={{ margin: 0, fontWeight: 600, color: '#2C1E18' }}>No verified patron reviews yet.</p>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem' }}>Be the first verified patron to share your impression of this handcrafted piece!</p>
                   </div>
-                ))}
+                ) : (
+                  reviews.map((rev) => (
+                    <div key={rev.id} className="review-item-card">
+                      <div className="review-top">
+                        <strong>{rev.user_name || 'Artisan Collector'}</strong>
+                        <RatingStars rating={rev.rating} size={13} />
+                      </div>
+                      <p className="review-body">{rev.comment}</p>
+                      <span className="review-date">{rev.created_at ? new Date(rev.created_at).toLocaleDateString() : 'Recent'}</span>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}

@@ -13,7 +13,9 @@ def get_products():
     min_price = request.args.get('min_price', type=float)
     max_price = request.args.get('max_price', type=float)
     min_rating = request.args.get('min_rating', type=float)
-    availability = request.args.get('availability') # 'in-stock', 'out-of-stock'
+    material = request.args.get('material')
+    availability = request.args.get('availability') # 'in-stock', 'out-of-stock', 'made-to-order'
+    artisan_id = request.args.get('artisan_id', type=int)
     sort_by = request.args.get('sort_by', 'popular') # 'popular', 'highest-rated', 'newest', 'price-low', 'price-high'
 
     try:
@@ -37,10 +39,18 @@ def get_products():
                 query += " AND c.name = %s"
                 params.append(category)
 
+            if material and material != 'All':
+                query += " AND p.material LIKE %s"
+                params.append(f"%{material}%")
+
+            if artisan_id:
+                query += " AND (p.artisan_id = %s OR a.user_id = %s)"
+                params.extend([artisan_id, artisan_id])
+
             if search:
-                query += " AND (p.name LIKE %s OR c.name LIKE %s OR a.name LIKE %s OR p.description LIKE %s)"
+                query += " AND (p.name LIKE %s OR c.name LIKE %s OR a.name LIKE %s OR p.description LIKE %s OR p.material LIKE %s)"
                 term = f"%{search}%"
-                params.extend([term, term, term, term])
+                params.extend([term, term, term, term, term])
 
             if min_price is not None:
                 query += " AND p.price >= %s"
@@ -55,9 +65,11 @@ def get_products():
                 params.append(min_rating)
 
             if availability == 'in-stock':
-                query += " AND p.stock_quantity > 0"
+                query += " AND (p.stock_quantity > 0 OR p.is_made_to_order = 1)"
             elif availability == 'out-of-stock':
-                query += " AND p.stock_quantity <= 0"
+                query += " AND p.stock_quantity <= 0 AND (p.is_made_to_order = 0 OR p.is_made_to_order IS NULL)"
+            elif availability == 'made-to-order':
+                query += " AND p.is_made_to_order = 1"
 
             # Sorting
             if sort_by == 'highest-rated':
@@ -132,27 +144,41 @@ def create_product():
     name = data.get('name')
     price = data.get('price')
     category_id = data.get('category_id')
-    artisan_id = data.get('artisan_id')
-    description = data.get('description', '')
+    category_name = data.get('category_name')
+    artisan_id = data.get('artisan_id', 1)
+    description = data.get('description', 'Handcrafted creation directly made in an artisan workshop.')
     image = data.get('image', 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80')
     material = data.get('material', 'Natural Handcrafted Material')
     dimensions = data.get('dimensions', 'Standard')
     care_instructions = data.get('care_instructions', 'Wipe gently with clean dry cloth.')
     stock_quantity = data.get('stock_quantity', 1)
+    is_customizable = 1 if data.get('is_customizable', True) else 0
+    is_made_to_order = 1 if data.get('is_made_to_order', False) else 0
 
-    if not name or price is None or not category_id or not artisan_id:
-        return jsonify({"error": "name, price, category_id, and artisan_id are required"}), 400
+    if not name or price is None:
+        return jsonify({"error": "name and price are required"}), 400
 
     try:
         conn = get_db_connection()
         with conn.cursor() as cursor:
+            # Resolve category_id if name provided
+            if not category_id and category_name:
+                cursor.execute("SELECT id FROM categories WHERE name LIKE %s LIMIT 1;", (f"%{category_name}%",))
+                cat_row = cursor.fetchone()
+                if cat_row:
+                    category_id = cat_row['id']
+                else:
+                    category_id = 1
+            elif not category_id:
+                category_id = 1
+
             cursor.execute(
                 """
                 INSERT INTO products 
-                (name, price, category_id, artisan_id, description, image, material, dimensions, care_instructions, stock_quantity, rating)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 5.0);
+                (name, price, category_id, artisan_id, description, image, material, dimensions, care_instructions, stock_quantity, rating, is_customizable, is_made_to_order)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 5.0, %s, %s);
                 """,
-                (name, price, category_id, artisan_id, description, image, material, dimensions, care_instructions, stock_quantity)
+                (name, price, category_id, artisan_id, description, image, material, dimensions, care_instructions, stock_quantity, is_customizable, is_made_to_order)
             )
             conn.commit()
             new_id = cursor.lastrowid

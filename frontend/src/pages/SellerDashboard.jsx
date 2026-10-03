@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Palette, 
   Package, 
@@ -16,27 +16,56 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { getProducts, updateProductApi, deleteProductApi, getOrders, updateOrderStatusApi } from '../services/api';
+import { 
+  getProducts, 
+  updateProductApi, 
+  deleteProductApi, 
+  getSellerOrdersApi, 
+  updateOrderStatusApi, 
+  createProductApi 
+} from '../services/api';
 import './SellerDashboard.css';
 
 export default function SellerDashboard() {
-  const { user } = useAuth();
+  const { user, isAuthenticated, isSeller, loading: authLoading } = useAuth();
   const { addToast } = useToast();
+  const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('products');
   const [artisanProducts, setArtisanProducts] = useState([]);
   const [artisanOrders, setArtisanOrders] = useState([]);
+  const [salesSummary, setSalesSummary] = useState({
+    total_revenue: 0,
+    total_orders: 0,
+    total_items_sold: 0
+  });
   const [loading, setLoading] = useState(true);
+
+  // Access guard — redirect non-sellers
+  useEffect(() => {
+    if (!authLoading) {
+      if (!isAuthenticated) {
+        navigate('/login', { state: { from: { pathname: '/seller' } } });
+      } else if (!isSeller) {
+        navigate('/');
+        addToast('Access denied: Seller privileges required.', 'error');
+      }
+    }
+  }, [isAuthenticated, isSeller, authLoading]);
 
   // Load seller data
   const loadSellerData = async () => {
     setLoading(true);
     try {
-      const prodRes = await getProducts();
+      const artisanParam = user?.artisan_id || user?.id;
+      const prodRes = await getProducts(artisanParam ? { artisan_id: artisanParam } : {});
       setArtisanProducts(prodRes.products || []);
 
-      const orderRes = await getOrders();
+      const orderRes = await getSellerOrdersApi();
       setArtisanOrders(orderRes.orders || []);
+      if (orderRes.sales_summary) {
+        setSalesSummary(orderRes.sales_summary);
+      }
     } catch (err) {
       console.warn("Seller data fetch warning:", err);
     } finally {
@@ -45,8 +74,10 @@ export default function SellerDashboard() {
   };
 
   useEffect(() => {
-    loadSellerData();
-  }, []);
+    if (isAuthenticated && isSeller) {
+      loadSellerData();
+    }
+  }, [isAuthenticated, isSeller]);
 
   // Add Product Modal
   const [showAddModal, setShowAddModal] = useState(false);
@@ -90,34 +121,42 @@ export default function SellerDashboard() {
     }
   };
 
-  const handleCreateProduct = (e) => {
+  const handleCreateProduct = async (e) => {
     e.preventDefault();
     if (!newProdName || !newProdPrice) return;
 
-    const newCreated = {
-      id: Date.now(),
-      name: newProdName,
-      category_name: newProdCategory,
-      artisan_name: user?.name || 'Rajesh Kumar',
-      artisan_id: user?.id || 1,
-      price: Number(newProdPrice),
-      rating: 5.0,
-      stock_quantity: 10,
-      image: newProdImage,
-      description: 'Handmade creation directly crafted in our artisan workshop.',
-      is_customizable: newProdCustomizable
-    };
-
-    setArtisanProducts(prev => [newCreated, ...prev]);
-    setShowAddModal(false);
-    setNewProdName('');
-    setNewProdPrice('');
-    addToast('New handcrafted product published to the marketplace!', 'success');
+    try {
+      const payload = {
+        name: newProdName,
+        category_name: newProdCategory,
+        price: Number(newProdPrice),
+        stock_quantity: parseInt(newProdStock) || 10,
+        image: newProdImage,
+        description: 'Handmade creation directly crafted in our artisan workshop.',
+        is_customizable: newProdCustomizable,
+        is_made_to_order: newProdMadeToOrder,
+        artisan_id: user?.artisan_id || user?.id || 1
+      };
+      await createProductApi(payload);
+      addToast('New handcrafted product published to the marketplace!', 'success');
+      setShowAddModal(false);
+      setNewProdName('');
+      setNewProdPrice('');
+      loadSellerData();
+    } catch (err) {
+      addToast(err.message || "Failed to create product listing", 'error');
+    }
   };
 
-  const handleDeleteProduct = (prodId, prodName) => {
-    setArtisanProducts(prev => prev.filter(p => p.id !== prodId));
-    addToast(`Removed "${prodName}" from your active catalog`, 'info');
+  const handleDeleteProduct = async (prodId, prodName) => {
+    if (!window.confirm(`Are you sure you want to remove "${prodName}" from your active catalog?`)) return;
+    try {
+      await deleteProductApi(prodId);
+      setArtisanProducts(prev => prev.filter(p => p.id !== prodId));
+      addToast(`Removed "${prodName}" from your active catalog`, 'info');
+    } catch (err) {
+      addToast(err.message || "Failed to delete product", 'error');
+    }
   };
 
   return (
@@ -130,10 +169,10 @@ export default function SellerDashboard() {
               <Palette size={32} />
             </div>
             <div>
-              <div className="badge-seller-tag">Verified Master Artisan Studio</div>
-              <h1 className="seller-name">{user?.name || 'Rajesh Kumar'}</h1>
+              <div className="badge-seller-tag">Verified Artisan Studio</div>
+              <h1 className="seller-name">{user?.name}</h1>
               <p className="seller-craft-sub">
-                {user?.craft_name || 'Jaipur Blue Pottery Studio'} • {user?.location || 'Jaipur, Rajasthan'}
+                {user?.craft_name || 'Artisan Studio'}{user?.location ? ` • ${user.location}` : ''}
               </p>
             </div>
           </div>
@@ -157,7 +196,7 @@ export default function SellerDashboard() {
           <div className="metric-box">
             <span className="metric-icon-wrap bg-sage"><ShoppingBag size={20} /></span>
             <div className="metric-data">
-              <span className="metric-val">{artisanOrders.length}</span>
+              <span className="metric-val">{salesSummary.total_orders || artisanOrders.length}</span>
               <span className="metric-label">Custom Orders Queue</span>
             </div>
           </div>
@@ -165,16 +204,18 @@ export default function SellerDashboard() {
           <div className="metric-box">
             <span className="metric-icon-wrap bg-gold"><IndianRupee size={20} /></span>
             <div className="metric-data">
-              <span className="metric-val">₹42,850</span>
-              <span className="metric-label">Total Artisan Revenue</span>
+              <span className="metric-val">
+                ₹{Number(salesSummary.total_revenue || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
+              </span>
+              <span className="metric-label">Actual Revenue</span>
             </div>
           </div>
 
           <div className="metric-box">
             <span className="metric-icon-wrap bg-espresso"><Sparkles size={20} /></span>
             <div className="metric-data">
-              <span className="metric-val">4.95 ★</span>
-              <span className="metric-label">Patron Satisfaction</span>
+              <span className="metric-val">{salesSummary.total_items_sold || 0}</span>
+              <span className="metric-label">Handcrafted Items Sold</span>
             </div>
           </div>
         </div>
@@ -286,10 +327,10 @@ export default function SellerDashboard() {
             {artisanOrders.length === 0 ? (
               <div style={{ padding: '30px', textAlign: 'center', color: '#666' }}>No orders found.</div>
             ) : artisanOrders.map((ord) => (
-              <div key={ord.id} className="artisan-order-card" style={{ border: '1px solid #E6D7C3', borderRadius: '12px', padding: '16px', background: '#fff' }}>
+              <div key={ord.id} className="artisan-order-card" style={{ border: '1px solid var(--border-color)', borderRadius: '12px', padding: '16px', background: '#fff' }}>
                 <div className="order-top-row" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
                   <div>
-                    <strong className="order-id" style={{ color: '#B86F52', fontSize: '1rem' }}>{ord.order_code || `#ORD-${ord.id}`}</strong>
+                    <strong className="order-id" style={{ color: 'var(--secondary)', fontSize: '1rem' }}>{ord.order_code || `#ORD-${ord.id}`}</strong>
                     <span className="order-date" style={{ color: '#888', fontSize: '0.85rem', marginLeft: '10px' }}>
                       • {new Date(ord.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </span>
@@ -307,12 +348,12 @@ export default function SellerDashboard() {
 
                   <div style={{ marginTop: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {ord.items?.map((it) => (
-                      <div key={it.id} style={{ display: 'flex', gap: '10px', alignItems: 'center', background: '#FAF9F6', padding: '8px', borderRadius: '6px' }}>
+                      <div key={it.id} style={{ display: 'flex', gap: '10px', alignItems: 'center', background: 'var(--bg-muted)', padding: '8px', borderRadius: '6px' }}>
                         <img src={it.image} alt={it.name} style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
                         <div style={{ flex: 1, fontSize: '0.85rem' }}>
                           <strong>{it.name}</strong> × {it.quantity}
                           {(it.selected_color || it.selected_size || it.custom_text) && (
-                            <div style={{ fontSize: '0.78rem', color: '#B86F52', marginTop: '2px' }}>
+                            <div style={{ fontSize: '0.78rem', color: 'var(--secondary)', marginTop: '2px' }}>
                               {it.selected_color && <span>Color: {it.selected_color} | </span>}
                               {it.selected_size && <span>Size: {it.selected_size} | </span>}
                               {it.custom_text && <span>Text: "{it.custom_text}"</span>}
@@ -328,7 +369,7 @@ export default function SellerDashboard() {
                 <div className="order-footer-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '10px', borderTop: '1px solid #f0f0f0' }}>
                   <div className="status-badge-wrap" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>Status: </span>
-                    <strong style={{ textTransform: 'capitalize', color: '#B86F52' }}>{ord.order_status || 'Pending'}</strong>
+                    <strong style={{ textTransform: 'capitalize', color: 'var(--secondary)' }}>{ord.order_status || 'Pending'}</strong>
                   </div>
 
                   <div className="status-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>

@@ -42,6 +42,23 @@ export const updateProfileApi = (profileData) => request('/auth/profile', {
 });
 export const logoutUser = () => request('/auth/logout', { method: 'POST' });
 
+// Upload avatar image file
+export const uploadAvatar = (file) => {
+  const url = `${API_BASE_URL}/auth/avatar`;
+  const token = localStorage.getItem('craftora_token');
+  const formData = new FormData();
+  formData.append('avatar', file);
+  return fetch(url, {
+    method: 'POST',
+    headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
+    body: formData,
+  }).then(async (res) => {
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || `Upload failed (${res.status})`);
+    return data;
+  });
+};
+
 // 3. Wishlist APIs
 export const getWishlist = () => request('/wishlist');
 export const addToWishlist = (productId) => request('/wishlist', {
@@ -82,6 +99,7 @@ export const createOrderApi = (deliveryData) => request('/orders', {
   body: JSON.stringify(deliveryData)
 });
 export const getOrders = () => request('/orders');
+export const getSellerOrdersApi = () => request('/orders/seller');
 export const getOrderById = (id) => request(`/orders/${id}`);
 export const cancelOrderApi = (id) => request(`/orders/${id}/cancel`, {
   method: 'PUT'

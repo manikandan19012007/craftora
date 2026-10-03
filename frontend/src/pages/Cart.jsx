@@ -81,7 +81,7 @@ export default function Cart() {
                                 <span><strong>Material:</strong> {item.selected_material}</span>
                               )}
                               {item.custom_text && (
-                                <span style={{ color: '#B86F52' }}><Sparkles size={12} style={{ display: 'inline', marginRight: '4px' }} /><strong>Text:</strong> "{item.custom_text}"</span>
+                                <span style={{ color: 'var(--secondary)' }}><Sparkles size={12} style={{ display: 'inline', marginRight: '4px' }} /><strong>Text:</strong> "{item.custom_text}"</span>
                               )}
                               {custFee > 0 && (
                                 <span style={{ fontStyle: 'italic', color: '#666' }}>Customization Charge: +₹{custFee}</span>

@@ -107,8 +107,8 @@ export default function Orders() {
               style={{
                 padding: '8px 16px',
                 borderRadius: '20px',
-                border: statusFilter === tab ? '2px solid #B86F52' : '1px solid #ccc',
-                background: statusFilter === tab ? '#B86F52' : '#fff',
+                border: statusFilter === tab ? '2px solid var(--secondary)' : '1px solid #ccc',
+                background: statusFilter === tab ? 'var(--secondary)' : '#fff',
                 color: statusFilter === tab ? '#fff' : '#444',
                 fontWeight: statusFilter === tab ? 600 : 400,
                 cursor: 'pointer',
@@ -140,13 +140,13 @@ export default function Orders() {
               const canCancel = ['Pending', 'Confirmed'].includes(order.order_status || 'Pending');
 
               return (
-                <div key={order.id} className="order-card" style={{ border: '1px solid #E6D7C3', borderRadius: '12px', padding: '20px', background: '#fff' }}>
+                <div key={order.id} className="order-card" style={{ border: '1px solid var(--border-color)', borderRadius: '12px', padding: '20px', background: '#fff' }}>
                   {/* Order Card Header */}
                   <div className="order-card-header" style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '16px', pb: '12px', borderBottom: '1px solid #f0f0f0' }}>
                     <div className="order-header-left" style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
                       <div className="order-id-block">
                         <span className="order-label" style={{ display: 'block', fontSize: '0.78rem', color: '#888' }}>Order Code</span>
-                        <strong className="order-id-val" style={{ color: '#B86F52' }}>{order.order_code || `#ORD-${order.id}`}</strong>
+                        <strong className="order-id-val" style={{ color: 'var(--secondary)' }}>{order.order_code || `#ORD-${order.id}`}</strong>
                       </div>
                       <div className="order-date-block">
                         <span className="order-label" style={{ display: 'block', fontSize: '0.78rem', color: '#888' }}>Date Placed</span>
@@ -204,7 +204,7 @@ export default function Orders() {
                           
                           {/* Display selected variant options & custom text */}
                           {(item.selected_color || item.selected_size || item.custom_text) && (
-                            <div className="order-variant-pill" style={{ fontSize: '0.8rem', color: '#B86F52', display: 'flex', gap: '10px', marginTop: '2px' }}>
+                            <div className="order-variant-pill" style={{ fontSize: '0.8rem', color: 'var(--secondary)', display: 'flex', gap: '10px', marginTop: '2px' }}>
                               {item.selected_color && <span>Color: {item.selected_color}</span>}
                               {item.selected_size && <span>Size: {item.selected_size}</span>}
                               {item.custom_text && <span>Text: "{item.custom_text}"</span>}

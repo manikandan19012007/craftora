@@ -164,7 +164,7 @@ export default function Footer() {
         <div className="container footer-bottom-inner">
           <p>
             © {new Date().getFullYear()} CRAFTORA Handmade Marketplace — Crafted with&nbsp;
-            <Heart size={12} className="heart-icon" fill="#B86F52" color="#B86F52" />
+            <Heart size={12} className="heart-icon" fill="#2563EB" color="#2563EB" />
             &nbsp;for conscious Indian living.
           </p>
           <div className="footer-legal-links">

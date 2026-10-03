@@ -14,6 +14,8 @@ import ProductGrid from '../components/ProductGrid';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ErrorMessage from '../components/ErrorMessage';
 import { useToast } from '../context/ToastContext';
+import { useWishlist } from '../context/WishlistContext';
+import { useCart } from '../context/CartContext';
 import { getProducts, getCategories } from '../services/api';
 import { initialAllProducts } from '../services/productsData';
 import './Products.css';
@@ -32,6 +34,18 @@ const RATINGS = [
   { id: '3', label: '3★ & Above', min: 3.0 }
 ];
 
+const MATERIALS = [
+  { id: 'all', label: 'All Materials' },
+  { id: 'Clay', label: 'Clay & Terracotta' },
+  { id: 'Silk', label: 'Handloom Silk' },
+  { id: 'Cotton', label: 'Organic Cotton' },
+  { id: 'Wood', label: 'Sheesham & Teak Wood' },
+  { id: 'Brass', label: 'Brass & Bell Metal' },
+  { id: 'Silver', label: 'Silver Filigree' },
+  { id: 'Leather', label: 'Embossed Leather' },
+  { id: 'Jute', label: 'Natural Jute' }
+];
+
 export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { addToast } = useToast();
@@ -42,6 +56,7 @@ export default function Products() {
   const [selectedGender, setSelectedGender] = useState(searchParams.get('gender') || 'All');
   const [selectedPriceRange, setSelectedPriceRange] = useState('all');
   const [selectedRating, setSelectedRating] = useState('all');
+  const [selectedMaterial, setSelectedMaterial] = useState('all');
   const [availability, setAvailability] = useState('all');
   const [sortBy, setSortBy] = useState('popular');
 
@@ -55,10 +70,25 @@ export default function Products() {
 
   // Mobile Drawer
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
-  const [wishlistIds, setWishlistIds] = useState([]);
+  
+  // Real Wishlist & Cart integration
+  const { wishlistItems, toggleWishlist, isWishlisted } = useWishlist();
+  const { addToCart } = useCart();
+  const wishlistIds = wishlistItems.map(item => item.id);
 
-  // Pagination
-  const ITEMS_PER_PAGE = 9;
+  const handleAddToCart = (product) => {
+    addToCart(product, 1, null);
+    addToast(`Added "${product.name}" to cart!`, 'success');
+  };
+
+  const handleToggleWishlist = (product) => {
+    toggleWishlist(product);
+    const already = isWishlisted(product.id);
+    addToast(already ? `Removed "${product.name}" from wishlist` : `Added "${product.name}" to wishlist!`, already ? 'info' : 'success');
+  };
+
+  // Pagination — 12 items for clean 4-col desktop and 2-col mobile
+  const ITEMS_PER_PAGE = 12;
   const [currentPage, setCurrentPage] = useState(1);
 
   // 1. Fetch Categories from Backend on mount
@@ -84,6 +114,7 @@ export default function Products() {
     const params = {};
     if (selectedCategory && selectedCategory !== 'All') params.category = selectedCategory;
     if (selectedGender && selectedGender !== 'All') params.gender = selectedGender;
+    if (selectedMaterial && selectedMaterial !== 'all') params.material = selectedMaterial;
     if (searchQuery.trim()) params.search = searchQuery.trim();
     if (priceObj && priceObj.min !== null) params.min_price = priceObj.min;
     if (priceObj && priceObj.max !== null) params.max_price = priceObj.max;
@@ -109,6 +140,11 @@ export default function Products() {
       // Category filter (exact match on `category` field)
       if (params.category) {
         list = list.filter((p) => p.category === params.category);
+      }
+
+      // Material filter
+      if (params.material && params.material !== 'all') {
+        list = list.filter((p) => (p.material || '').toLowerCase().includes(params.material.toLowerCase()));
       }
 
       // Gender filter — map gender param to category name
@@ -145,12 +181,14 @@ export default function Products() {
       if (params.min_rating !== undefined) list = list.filter((p) => (p.rating || 0) >= params.min_rating);
 
       // Availability filter
-      if (params.availability === 'in_stock') list = list.filter((p) => (p.stock_quantity || 0) > 0);
+      if (params.availability === 'in-stock') list = list.filter((p) => (p.stock_quantity || 0) > 0 || p.is_made_to_order);
+      else if (params.availability === 'out-of-stock') list = list.filter((p) => (p.stock_quantity || 0) <= 0 && !p.is_made_to_order);
+      else if (params.availability === 'made-to-order') list = list.filter((p) => Boolean(p.is_made_to_order));
 
       // Sort
-      if (params.sort_by === 'price_asc') list.sort((a, b) => a.price - b.price);
-      else if (params.sort_by === 'price_desc') list.sort((a, b) => b.price - a.price);
-      else if (params.sort_by === 'rating') list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      if (params.sort_by === 'price-low') list.sort((a, b) => a.price - b.price);
+      else if (params.sort_by === 'price-high') list.sort((a, b) => b.price - a.price);
+      else if (params.sort_by === 'highest-rated') list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
       else if (params.sort_by === 'newest') list.sort((a, b) => b.id - a.id);
       else list.sort((a, b) => (b.rating || 0) - (a.rating || 0)); // default: popular
 
@@ -163,33 +201,18 @@ export default function Products() {
   useEffect(() => {
     fetchProductCatalog();
     setCurrentPage(1);
-  }, [searchQuery, selectedCategory, selectedGender, selectedPriceRange, selectedRating, availability, sortBy]);
+  }, [searchQuery, selectedCategory, selectedGender, selectedPriceRange, selectedRating, selectedMaterial, availability, sortBy]);
 
   useEffect(() => {
     const urlCategory = searchParams.get('category');
     const urlSearch = searchParams.get('search');
     const urlGender = searchParams.get('gender');
+    const urlMaterial = searchParams.get('material');
     if (urlCategory) setSelectedCategory(urlCategory);
     if (urlSearch) setSearchQuery(urlSearch);
     if (urlGender) setSelectedGender(urlGender);
+    if (urlMaterial) setSelectedMaterial(urlMaterial);
   }, [searchParams]);
-
-  const handleAddToCart = (product) => {
-    addToast(`Added "${product.name}" to cart!`, 'success');
-  };
-
-  const handleToggleWishlist = (product) => {
-    setWishlistIds((prev) => {
-      const exists = prev.includes(product.id);
-      if (exists) {
-        addToast(`Removed "${product.name}" from wishlist`, 'info');
-        return prev.filter((id) => id !== product.id);
-      } else {
-        addToast(`Added "${product.name}" to wishlist!`, 'success');
-        return [...prev, product.id];
-      }
-    });
-  };
 
   const resetFilters = () => {
     setSearchQuery('');
@@ -197,6 +220,7 @@ export default function Products() {
     setSelectedGender('All');
     setSelectedPriceRange('all');
     setSelectedRating('all');
+    setSelectedMaterial('all');
     setAvailability('all');
     setSortBy('popular');
     setCurrentPage(1);
@@ -215,6 +239,7 @@ export default function Products() {
     selectedCategory !== 'All' || 
     selectedPriceRange !== 'all' || 
     selectedRating !== 'all' || 
+    selectedMaterial !== 'all' ||
     availability !== 'all';
 
   return (
@@ -307,9 +332,15 @@ export default function Products() {
                 <button onClick={() => setSelectedRating('all')}><X size={14} /></button>
               </span>
             )}
+            {selectedMaterial !== 'all' && (
+              <span className="filter-chip">
+                Material: {MATERIALS.find(m => m.id === selectedMaterial)?.label || selectedMaterial}
+                <button onClick={() => setSelectedMaterial('all')}><X size={14} /></button>
+              </span>
+            )}
             {availability !== 'all' && (
               <span className="filter-chip">
-                {availability === 'in-stock' ? 'In Stock' : 'Out of Stock'}
+                {availability === 'in-stock' ? 'In Stock' : availability === 'made-to-order' ? 'Made to Order' : 'Out of Stock'}
                 <button onClick={() => setAvailability('all')}><X size={14} /></button>
               </span>
             )}
@@ -353,6 +384,24 @@ export default function Products() {
                   </li>
                 ))}
               </ul>
+            </div>
+
+            {/* Craft Material */}
+            <div className="filter-group">
+              <h4 className="filter-heading">Craft Material</h4>
+              <div className="radio-filter-group">
+                {MATERIALS.map((mat) => (
+                  <label key={mat.id} className="radio-label">
+                    <input
+                      type="radio"
+                      name="material-filter"
+                      checked={selectedMaterial === mat.id}
+                      onChange={() => setSelectedMaterial(mat.id)}
+                    />
+                    <span>{mat.label}</span>
+                  </label>
+                ))}
+              </div>
             </div>
 
             {/* Price */}
@@ -412,6 +461,15 @@ export default function Products() {
                     onChange={() => setAvailability('in-stock')}
                   />
                   <span>In Stock Only</span>
+                </label>
+                <label className="radio-label">
+                  <input
+                    type="radio"
+                    name="availability"
+                    checked={availability === 'made-to-order'}
+                    onChange={() => setAvailability('made-to-order')}
+                  />
+                  <span>Made to Order</span>
                 </label>
                 <label className="radio-label">
                   <input

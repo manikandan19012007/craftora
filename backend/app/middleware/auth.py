@@ -17,27 +17,18 @@ def token_required(f):
         if not token:
             return jsonify({"error": "Authentication token missing"}), 401
 
-        DEMO_TOKENS = {
-            'demo_admin_token': 1,
-            'demo_patron_token': 2,
-            'demo_artisan_token': 10
-        }
-
         try:
-            if token in DEMO_TOKENS:
-                user_id = DEMO_TOKENS[token]
-            else:
-                payload = jwt.decode(
-                    token, 
-                    current_app.config['SECRET_KEY'], 
-                    algorithms=["HS256"]
-                )
-                user_id = payload.get('user_id')
+            payload = jwt.decode(
+                token,
+                current_app.config['SECRET_KEY'],
+                algorithms=["HS256"]
+            )
+            user_id = payload.get('user_id')
 
             conn = get_db_connection()
             with conn.cursor() as cursor:
                 cursor.execute(
-                    "SELECT id, name, email, avatar, role, created_at FROM users WHERE id = %s;",
+                    "SELECT id, name, email, mobile, avatar, role, created_at FROM users WHERE id = %s;",
                     (user_id,)
                 )
                 current_user = cursor.fetchone()
@@ -60,6 +51,15 @@ def admin_required(f):
     def decorated(current_user, *args, **kwargs):
         if current_user.get('role') != 'ADMIN':
             return jsonify({"error": "Access denied: Administrator privileges required"}), 403
+        return f(current_user, *args, **kwargs)
+
+    return decorated
+
+def seller_required(f):
+    @wraps(f)
+    def decorated(current_user, *args, **kwargs):
+        if current_user.get('role') not in ('SELLER', 'ADMIN'):
+            return jsonify({"error": "Access denied: Seller privileges required"}), 403
         return f(current_user, *args, **kwargs)
 
     return decorated

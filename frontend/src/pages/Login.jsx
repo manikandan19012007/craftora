@@ -1,49 +1,43 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { LogIn, Mail, Lock, AlertCircle, ArrowRight, ShoppingBag, Palette, Shield } from 'lucide-react';
+import { LogIn, Mail, Lock, Eye, EyeOff, AlertCircle, ArrowRight, ShoppingBag, Palette, Shield } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import './Auth.css';
 
 export default function Login() {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate  = useNavigate();
+  const location  = useLocation();
   const { login } = useAuth();
   const { addToast } = useToast();
 
-  const [activeRole, setActiveRole] = useState('buyer'); // 'buyer' | 'seller' | 'admin'
-  const [email, setEmail] = useState('ananya@example.com');
-  const [password, setPassword] = useState('password123');
-  const [loading, setLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [email,        setEmail]        = useState('');
+  const [password,     setPassword]     = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading,      setLoading]      = useState(false);
+  const [errorMsg,     setErrorMsg]     = useState('');
 
   // Redirect destination after login
-  const from = location.state?.from?.pathname || (activeRole === 'seller' ? '/seller' : activeRole === 'admin' ? '/admin' : '/');
-
-  const handleRoleTabClick = (role) => {
-    setActiveRole(role);
-    setErrorMsg('');
-    if (role === 'buyer') {
-      setEmail('ananya@example.com');
-      setPassword('password123');
-    } else if (role === 'seller') {
-      setEmail('artisan@craftora.com');
-      setPassword('password123');
-    } else if (role === 'admin') {
-      setEmail('admin@craftora.com');
-      setPassword('password123');
-    }
-  };
+  const from = location.state?.from?.pathname || '/';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
-    setLoading(true);
 
+    if (!email.trim()) {
+      setErrorMsg('Please enter your email address.');
+      return;
+    }
+    if (!password) {
+      setErrorMsg('Please enter your password.');
+      return;
+    }
+
+    setLoading(true);
     try {
-      const user = await login(email, password);
+      const user = await login(email.trim().toLowerCase(), password);
       addToast(`Welcome back, ${user.name}!`, 'success');
-      
+
       if (user.role === 'ADMIN') {
         navigate('/admin', { replace: true });
       } else if (user.role === 'SELLER' || user.role === 'ARTISAN') {
@@ -52,7 +46,7 @@ export default function Login() {
         navigate(from, { replace: true });
       }
     } catch (err) {
-      setErrorMsg(err.message || 'Invalid email or password.');
+      setErrorMsg(err.message || 'Invalid email or password. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -67,18 +61,12 @@ export default function Login() {
             <span className="brand-name">CRAFTORA</span>
           </div>
           <h2>Sign In to CRAFTORA</h2>
-          <p>Access your personalized crafts, artisan studio, or marketplace management.</p>
+          <p>Access your personalized crafts marketplace account.</p>
         </div>
 
-        {/* ── ROLE SELECTION CARDS ────────────────────── */}
+        {/* Role info cards — informational only, no pre-filling */}
         <div className="role-cards-grid">
-          {/* Buyer Card */}
-          <button
-            type="button"
-            className={`role-card ${activeRole === 'buyer' ? 'active' : ''}`}
-            onClick={() => handleRoleTabClick('buyer')}
-            aria-pressed={activeRole === 'buyer'}
-          >
+          <div className="role-card role-info-card">
             <div className="role-card-icon buyer-icon">
               <ShoppingBag size={22} />
             </div>
@@ -86,16 +74,9 @@ export default function Login() {
               <strong>Buyer</strong>
               <span>Browse, customize &amp; order handmade products</span>
             </div>
-            {activeRole === 'buyer' && <span className="role-active-dot" aria-hidden="true" />}
-          </button>
+          </div>
 
-          {/* Seller / Artisan Card */}
-          <button
-            type="button"
-            className={`role-card ${activeRole === 'seller' ? 'active' : ''}`}
-            onClick={() => handleRoleTabClick('seller')}
-            aria-pressed={activeRole === 'seller'}
-          >
+          <div className="role-card role-info-card">
             <div className="role-card-icon seller-icon">
               <Palette size={22} />
             </div>
@@ -103,16 +84,9 @@ export default function Login() {
               <strong>Artisan / Seller</strong>
               <span>Manage your studio, products &amp; orders</span>
             </div>
-            {activeRole === 'seller' && <span className="role-active-dot" aria-hidden="true" />}
-          </button>
+          </div>
 
-          {/* Admin Card */}
-          <button
-            type="button"
-            className={`role-card ${activeRole === 'admin' ? 'active' : ''}`}
-            onClick={() => handleRoleTabClick('admin')}
-            aria-pressed={activeRole === 'admin'}
-          >
+          <div className="role-card role-info-card">
             <div className="role-card-icon admin-icon">
               <Shield size={22} />
             </div>
@@ -120,20 +94,8 @@ export default function Login() {
               <strong>Admin</strong>
               <span>Manage marketplace, artisans &amp; analytics</span>
             </div>
-            {activeRole === 'admin' && <span className="role-active-dot" aria-hidden="true" />}
-          </button>
+          </div>
         </div>
-
-        {/* Demo credentials banner */}
-        <div className="demo-credentials-banner">
-          <span className="demo-badge">Demo Mode</span>
-          <span>
-            {activeRole === 'buyer' && 'ananya@example.com / password123'}
-            {activeRole === 'seller' && 'artisan@craftora.com / password123'}
-            {activeRole === 'admin' && 'admin@craftora.com / password123'}
-          </span>
-        </div>
-
 
         {errorMsg && (
           <div className="auth-error-banner" role="alert">
@@ -142,7 +104,7 @@ export default function Login() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form onSubmit={handleSubmit} className="auth-form" noValidate>
           <div className="auth-input-group">
             <label htmlFor="email">Email Address</label>
             <div className="input-field-wrap">
@@ -150,11 +112,12 @@ export default function Login() {
               <input
                 id="email"
                 type="email"
-                placeholder="name@example.com"
+                placeholder="your@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
+                autoFocus
               />
             </div>
           </div>
@@ -162,60 +125,40 @@ export default function Login() {
           <div className="auth-input-group">
             <div className="label-with-link">
               <label htmlFor="password">Password</label>
-              <span className="forgot-link" onClick={() => addToast('All demo accounts use password: password123', 'info')}>
-                Forgot password?
-              </span>
             </div>
             <div className="input-field-wrap">
               <Lock size={18} className="input-icon" />
               <input
                 id="password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="current-password"
               />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
             </div>
           </div>
 
-          <button type="submit" className="btn btn-primary auth-submit-btn" disabled={loading}>
+          <button
+            type="submit"
+            id="login-submit-btn"
+            className="btn btn-primary auth-submit-btn"
+            disabled={loading}
+          >
             <LogIn size={18} />
-            <span>{loading ? 'Authenticating...' : `Sign In as ${activeRole === 'buyer' ? 'Buyer' : activeRole === 'seller' ? 'Artisan' : 'Admin'}`}</span>
+            <span>{loading ? 'Signing In...' : 'Sign In'}</span>
           </button>
         </form>
-
-        {/* DEMO ONE-CLICK CREDENTIALS BAR */}
-        <div className="demo-credentials-box">
-          <h4>🧪 One-Click Demo Credentials:</h4>
-          <div className="demo-buttons-grid">
-            <button 
-              type="button" 
-              className={`demo-btn ${activeRole === 'buyer' ? 'highlight' : ''}`}
-              onClick={() => handleRoleTabClick('buyer')}
-            >
-              <strong>🛍️ Patron/Buyer</strong>
-              <span>ananya@example.com</span>
-            </button>
-            <button 
-              type="button" 
-              className={`demo-btn ${activeRole === 'seller' ? 'highlight' : ''}`}
-              onClick={() => handleRoleTabClick('seller')}
-            >
-              <strong>🎨 Master Artisan</strong>
-              <span>artisan@craftora.com</span>
-            </button>
-            <button 
-              type="button" 
-              className={`demo-btn ${activeRole === 'admin' ? 'highlight' : ''}`}
-              onClick={() => handleRoleTabClick('admin')}
-            >
-              <strong>🛡️ Platform Admin</strong>
-              <span>admin@craftora.com</span>
-            </button>
-          </div>
-        </div>
 
         <div className="auth-footer">
           <p>

@@ -368,43 +368,123 @@ def cancel_order(current_user, order_id):
 @token_required
 def get_seller_orders(current_user):
     """
-    Retrieve orders containing products crafted by or assigned to the artisan seller
+    Retrieve orders containing products crafted by or assigned to the artisan seller.
+    Sellers only see orders and customer info relevant to their products.
     """
+    user_id = current_user['id']
+    is_admin = current_user.get('role') == 'ADMIN'
+
     try:
         conn = get_db_connection()
         with conn.cursor() as cursor:
-            query = """
-                SELECT DISTINCT o.id, o.order_code, o.full_name, o.total_amount, 
-                       o.shipping_address, o.city, o.state, o.pincode, o.phone,
-                       o.order_status, o.payment_status, o.payment_method, o.created_at,
-                       u.name as customer_name, u.email as customer_email
-                FROM orders o
-                JOIN order_items oi ON o.id = oi.order_id
-                JOIN users u ON o.user_id = u.id
-                ORDER BY o.id DESC;
-            """
-            cursor.execute(query)
+            # Locate artisan record linked to this user
+            cursor.execute("SELECT id, name, specialty, bio, image, location FROM artisans WHERE user_id = %s;", (user_id,))
+            artisan = cursor.fetchone()
+            artisan_id = artisan['id'] if artisan else None
+
+            if not is_admin and not artisan_id:
+                # Fallback: check if an artisan has matching name
+                cursor.execute("SELECT id FROM artisans WHERE name = %s;", (current_user.get('name', ''),))
+                art_by_name = cursor.fetchone()
+                if art_by_name:
+                    artisan_id = art_by_name['id']
+
+            if is_admin:
+                query = """
+                    SELECT DISTINCT o.id, o.order_code, o.full_name, o.total_amount, 
+                           o.shipping_address, o.city, o.state, o.pincode, o.phone,
+                           o.order_status, o.payment_status, o.payment_method, o.created_at,
+                           u.name as customer_name, u.email as customer_email
+                    FROM orders o
+                    JOIN order_items oi ON o.id = oi.order_id
+                    JOIN users u ON o.user_id = u.id
+                    ORDER BY o.id DESC;
+                """
+                cursor.execute(query)
+            elif artisan_id:
+                query = """
+                    SELECT DISTINCT o.id, o.order_code, o.full_name, o.total_amount, 
+                           o.shipping_address, o.city, o.state, o.pincode, o.phone,
+                           o.order_status, o.payment_status, o.payment_method, o.created_at,
+                           u.name as customer_name, u.email as customer_email
+                    FROM orders o
+                    JOIN order_items oi ON o.id = oi.order_id
+                    LEFT JOIN products p ON oi.product_id = p.id
+                    JOIN users u ON o.user_id = u.id
+                    WHERE (oi.artisan_id = %s OR p.artisan_id = %s)
+                    ORDER BY o.id DESC;
+                """
+                cursor.execute(query, (artisan_id, artisan_id))
+            else:
+                conn.close()
+                return jsonify({
+                    "orders": [],
+                    "sales_summary": {
+                        "total_revenue": 0.0,
+                        "total_orders": 0,
+                        "total_items_sold": 0
+                    },
+                    "artisan_profile": None
+                }), 200
+
             orders = cursor.fetchall()
 
+            total_revenue = 0.0
+            total_items_sold = 0
+
             for order in orders:
-                cursor.execute(
-                    """
-                    SELECT oi.id, oi.product_id, oi.quantity, oi.price,
-                           oi.selected_color, oi.selected_size, oi.custom_text, oi.customization_payload,
-                           COALESCE(oi.product_name, p.name) as name, 
-                           COALESCE(oi.product_image, p.image) as image,
-                           a.name as artisan_name
-                    FROM order_items oi
-                    LEFT JOIN products p ON oi.product_id = p.id
-                    LEFT JOIN artisans a ON oi.artisan_id = a.id OR p.artisan_id = a.id
-                    WHERE oi.order_id = %s;
-                    """,
-                    (order['id'],)
-                )
-                order['items'] = cursor.fetchall()
+                if is_admin or not artisan_id:
+                    cursor.execute(
+                        """
+                        SELECT oi.id, oi.product_id, oi.quantity, oi.price,
+                               oi.selected_color, oi.selected_size, oi.selected_material, 
+                               oi.custom_text, oi.customization_payload,
+                               COALESCE(oi.product_name, p.name) as name, 
+                               COALESCE(oi.product_image, p.image) as image,
+                               a.name as artisan_name
+                        FROM order_items oi
+                        LEFT JOIN products p ON oi.product_id = p.id
+                        LEFT JOIN artisans a ON oi.artisan_id = a.id OR p.artisan_id = a.id
+                        WHERE oi.order_id = %s;
+                        """,
+                        (order['id'],)
+                    )
+                else:
+                    cursor.execute(
+                        """
+                        SELECT oi.id, oi.product_id, oi.quantity, oi.price,
+                               oi.selected_color, oi.selected_size, oi.selected_material, 
+                               oi.custom_text, oi.customization_payload,
+                               COALESCE(oi.product_name, p.name) as name, 
+                               COALESCE(oi.product_image, p.image) as image,
+                               a.name as artisan_name
+                        FROM order_items oi
+                        LEFT JOIN products p ON oi.product_id = p.id
+                        LEFT JOIN artisans a ON oi.artisan_id = a.id OR p.artisan_id = a.id
+                        WHERE oi.order_id = %s AND (oi.artisan_id = %s OR p.artisan_id = %s);
+                        """,
+                        (order['id'], artisan_id, artisan_id)
+                    )
+                items = cursor.fetchall()
+                order['items'] = items
+
+                # Accumulate actual sales summary
+                for item in items:
+                    unit_p = float(item['price'] or 0)
+                    qty = int(item['quantity'] or 1)
+                    total_revenue += unit_p * qty
+                    total_items_sold += qty
 
         conn.close()
-        return jsonify({"orders": orders}), 200
+        return jsonify({
+            "orders": orders,
+            "sales_summary": {
+                "total_revenue": round(total_revenue, 2),
+                "total_orders": len(orders),
+                "total_items_sold": total_items_sold
+            },
+            "artisan_profile": artisan
+        }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

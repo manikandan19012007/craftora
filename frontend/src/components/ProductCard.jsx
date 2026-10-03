@@ -106,7 +106,7 @@ export default function ProductCard({
           aria-pressed={isWishlisted}
           title={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
         >
-          <Heart size={16} fill={isWishlisted ? '#B86F52' : 'none'} color={isWishlisted ? '#B86F52' : 'currentColor'} />
+          <Heart size={16} fill={isWishlisted ? '#EF4444' : 'none'} color={isWishlisted ? '#EF4444' : 'currentColor'} />
         </button>
 
         {/* Top Badges */}
